@@ -33,6 +33,4 @@ const userSchema = new Schema({
 }, { timestamps: true }
 )
 
-// adding some function like password hashing etc
-
 export const User = mongoose.models.User || mongoose.model("User", userSchema);
