@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 
 export async function verifyJwtMiddleware(request) {
     try {
+        console.log("logout middleware is running");
+        
         const token = request.cookies.get("accessToken")?.value ||
             request.headers.get("Authorization")?.replace("Bearer ", "");
 

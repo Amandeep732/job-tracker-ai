@@ -1,41 +1,44 @@
 import { User } from "@/models/user.model";
-import { hash } from "bcryptjs"
+import { hash } from "bcryptjs";
 import connectDb from "@/lib/connectDB";
 
-
 export async function POST(req) {
-    await connectDb()
+    try {
+        await connectDb();
 
-    const { username, email, password, fullName } = await req.json();
+        const { username, email, password, fullName } = await req.json();
 
-    if (!username || !email || !password) {
-        return Response.json({ error: "Missing field" }, { status: 400 })
-    }
+        if (!username || !email || !password) {
+            return Response.json({ error: "Missing field" }, { status: 400 });
+        }
 
-    const exsisting = await User.findOne({ username })
-    if (exsisting) {
-        return Response.json({ error: "user is already exsist" }, { status: 409 })
-    }
-    // 🥹 create user
-    const hashedpassword = await hash(password, 10)
-    const user = await User.create({
-            fullName : fullName || "",
+        const exsisting = await User.findOne({ username });
+        if (exsisting) {
+            return Response.json({ error: "user already exists" }, { status: 409 });
+        }
+
+      // const hashedpassword = await hash(password, 10);
+        const user = await User.create({
+            fullName: fullName || "",
             username,
             email,
-            password: hashedpassword
-        })
+            password
+        });
 
-    // Remove sensitive fields from response
-    const UserData = {
-        userId: user._id,
-        email: user.email,
-        username: user.username
+        const UserData = {
+            userId: user._id,
+            email: user.email,
+            username: user.username
+        };
+
+        return Response.json({
+            message: "User successfully registered",
+            status: 200,
+            user: UserData,
+        });
+
+    } catch (error) {
+        console.error("Registration error:", error);
+        return Response.json({ error: "Internal server error" }, { status: 500 });
     }
-
-
-    return Response.json({
-        message: "User successfully registerd",
-        status: 200,
-        user: UserData,
-    })
 }
