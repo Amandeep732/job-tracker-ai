@@ -1,78 +1,83 @@
-
-// import { upload } from '@/lib/multer'
-// import { uploadOnCloudinary } from '@/lib/cloudinary'
-// import { Job } from '@/models/job.model';
-// import { runMiddleware } from '@/lib/runMiddleware';
-// import connectDb from '@/lib/connectDB';
-
-// export const config = { api: { bodyParser: false } }
+import { upload } from '@/lib/multer';
+import { uploadOnCloudinary } from '@/lib/cloudinary';
+import { Job } from '@/models/job.model';
+import connectDb from '@/lib/connectDB';
+import { authenticateUser } from '@/middlewares/authenticateUser.middleware';
+import { runMiddleware } from '@/lib/runMiddleware';
 
 
-// export default async function handler(req, res) {
-//   //console.log("FILES RECEIVED: ", req.files);
-//   // get user details from frontend
-//   // check validation - data 
-//   // check if already exists or not  a
-//   // check for resume
-//   // upload them to cloudiniary - resume
-//   // create user object - create user entry in db
-//   // remove some sensitive info 
-//   // check for user creation
-//   // return res
-//   if (req.method !== "POST") {
-//     return res.status(405).json({ error: "Method not allowed" });
-//   }
-//   try {
-//     await connectDb()
-//     const {
-//       jobTitle,
-//       jobLocation,
-//       notes,
-//       companyName,
-//       jobDesc,
-//       reminderDate,
-//       status,
-//       AiSummary,
-//       AiTips,
-//       AiMatchScore
-//     } = req.body();
+export const config = { api: { bodyParser: false } }
 
-//     if ([jobTitle,
-//       jobLocation,
-//       notes,
-//       companyName,
-//       jobDesc,
-//       reminderDate,
-//       AiSummary,
-//       AiTips,
-//       AiMatchScore].some((field) =>
-//         field?.trim() === "")) {
-//       return res
-//         .status(400)
-//         .message("all fields are required")
-//     }
-//     // actiually this is if conditon to check ALL fields 🤣
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
+  try {
+    await connectDb();
+
+    // ✅ First: Authenticate user
+    await runMiddleware(req, res, authenticateUser);
+
+    // ✅ Second: Upload file
+    await runMiddleware(req, res, upload.single("resumeFile"));
+
+    const {
+      jobTitle,
+      jobLocation,
+      notes,
+      companyName,
+      jobDesc,
+      reminderDate,
+      status,
+      AiSummary,
+      AiTips,
+      AiMatchScore
+    } = req.body;
+
+    const userId = req.user?.id; // ✅ Got from token
     
-//     const job = await Job.find({})
+    
+    // ✅ Check for duplicate
+    const existingJob = await Job.findOne({
+      user: userId,
+      jobTitle: jobTitle?.toLowerCase().trim(),
+      companyName: companyName?.trim()
+    });
 
+    if (existingJob) {
+      return res.status(409).json({ error: "This job already exists." });
+    }
 
+    const pathName = req.file?.path;
+    if (!pathName) return res.status(400).json({ error: "Resume is missing" });
 
+    const resume = await uploadOnCloudinary(pathName);
+    if (!resume.url) return res.status(500).json({ error: "Cloudinary upload failed" });
 
+    const response = await Job.create({
+      user: userId,
+      jobTitle: jobTitle.toLowerCase().trim(),
+      jobLocation,
+      notes,
+      companyName: companyName.trim(),
+      jobDesc: jobDesc.trim(),
+      reminderDate,
+      status,
+      resumeFile: resume.url,
+      AiSummary: AiSummary || '',
+      AiTips: Array.isArray(AiTips) ? AiTips : [],
+      AiMatchScore: isNaN(Number(AiMatchScore)) ? null : Number(AiMatchScore),
+    });
 
+    if(!response){
+      return res.status(500).json({error : "something went wrong during entry in job data in db "})
+    }
 
+    return res.status(200).json({ message: "Job added successfully" });
 
-
-//     await runMiddleware(req, res, upload.single("resumeFile"));
-//     const file = req.file;
-//     if (!file) {
-//       return res.status(400).json({ error: "Resume PDF is required" });
-//     }
-
-
-
-//   } catch (err) {
-//     console.error("AddJob Error:", err);
-//     return res.status(500).json({ error: err.message });
-//   }
-// }
+  } catch (err) {
+    console.error("AddJob Error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+}
