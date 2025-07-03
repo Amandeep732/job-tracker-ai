@@ -31,7 +31,7 @@ export async function POST(req) {
     
         const { accessToken, refreshToken } = await generateAccessandRefreshToken(user._id);
     
-        cookies().set("accessToken", accessToken, {
+        await cookies().set("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 15,

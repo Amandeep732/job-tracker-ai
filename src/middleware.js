@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
 import { verifyJwtMiddleware } from './middlewares/auth.middleware'
 
-const PROTECTED_PATHS = ["/api/logout"];
+const PROTECTED_PATHS = ["/api/logout", "/api/changePassword"];
 export async function middleware(request) {
       const path = request.nextUrl.pathname;
-      console.log(path);
-      
 
       if(PROTECTED_PATHS.some((p) => p.startsWith(path))){
          return verifyJwtMiddleware(request)
@@ -14,5 +12,5 @@ export async function middleware(request) {
 }
  
 export const config = {
-  matcher: [ "/api/logout", "api/changePassword" ,"/((?!api|_next/static|favicon.ico).*)"],
+  matcher: [ "/api/logout", "/api/changePassword" ,"/((?!api|_next/static|favicon.ico).*)"],
 };

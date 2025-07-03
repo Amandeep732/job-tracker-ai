@@ -1,8 +1,10 @@
+import connectDb from "@/lib/connectDB";
 import { User } from "@/models/user.model";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
     try {
+        await connectDb()
         const { newPassword, oldPassword } = await request.json();
 
         if (!newPassword || !oldPassword) {

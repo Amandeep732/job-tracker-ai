@@ -46,6 +46,7 @@ const jobSchema = new Schema({
     AiSummary: {
         type: String,
         default: ''
+        
     },
     AiTips: {
         type: [String],
