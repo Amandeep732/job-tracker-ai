@@ -2,7 +2,7 @@ import { upload } from '@/lib/multer';
 import { uploadOnCloudinary } from '@/lib/cloudinary';
 import { Job } from '@/models/job.model';
 import connectDb from '@/lib/connectDB';
-import { authenticateUser } from '@/middlewares/authenticateUser.middleware';
+import { authenticateUserPages } from '../middlewares/authenticateUser';
 import { runMiddleware } from '@/lib/runMiddleware';
 
 
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     await connectDb();
 
     // ✅ First: Authenticate user
-    await runMiddleware(req, res, authenticateUser);
+    await runMiddleware(req, res, authenticateUserPages);
 
     // ✅ Second: Upload file
     await runMiddleware(req, res, upload.single("resumeFile"));

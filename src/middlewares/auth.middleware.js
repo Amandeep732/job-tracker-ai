@@ -7,7 +7,6 @@ export async function verifyJwtMiddleware(request) {
         
         const token = request.cookies.get("accessToken")?.value ||
             request.headers.get("Authorization")?.replace("Bearer ", "");
-
         if (!token) {
             return NextResponse.redirect(new URL("/login", request.url))
         }

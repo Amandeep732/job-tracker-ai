@@ -2,7 +2,7 @@ import { deleteFromCloudinary, uploadOnCloudinary } from "@/lib/cloudinary";
 import connectDb from "@/lib/connectDB";
 import { upload } from "@/lib/multer";
 import { runMiddleware } from "@/lib/runMiddleware";
-import { authenticateUser } from "@/middlewares/authenticateUser.middleware";
+import { authenticateUserPages } from "@/pages/middlewares/authenticateUser";
 import { Job } from "@/models/job.model";
 
 export const config = { api: { bodyParser: false } };
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     try {
         await connectDb();
-        await runMiddleware(req, res, authenticateUser);
+        await runMiddleware(req, res, authenticateUserPages);
         const userId = req.user?.id;
         await runMiddleware(req, res, upload.single("resumeFile"));
         const jobId = req.query.id;
