@@ -33,3 +33,16 @@ export const uploadOnCloudinary = async function (filePath) {
         return null;
     }
 }
+
+export const deleteFromCloudinary = async (public_id) => {
+    if(!public_id){
+      return NextResponse.json({ error: "public id is missing" }, { status: 404 })
+    }
+  try {
+    const res = await cloudinary.uploader.destroy(public_id);
+    return res;
+  } catch (error) {
+    console.error("Cloudinary deletion error:", error);
+    return null;
+  }
+};
