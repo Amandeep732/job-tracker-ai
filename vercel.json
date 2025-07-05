@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "src/app/api/ai/sendFollowUpEmails/route.js": {
+      "runtime": "nodejs18.x",
+      "schedule": "0 3 * * *"
+    }
+  }
+}
