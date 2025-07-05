@@ -10,7 +10,7 @@ export async function PATCH(req) {
             return Response.json({ error: "Password is required" }, { status: 400 });
         }
 
-        const email = cookies().get("reset_email")?.value;
+        const email = cookies().get("reset-email")?.value;
         if (!email) {
             return Response.json({ error: "Email not found or OTP not verified" }, { status: 403 });
         }
