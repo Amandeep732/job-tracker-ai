@@ -8,7 +8,15 @@ import { useEffect, useState } from "react";
 import useAuth from "@/hooks/UseAuth";
 
 // Base navigation items (always visible)
-const baseNavItems = [
+const baseNavItems = [];
+
+// Auth-dependent navigation items
+const authNavItems = [
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: <UserCircle className="w-4 h-4 mr-2" />,
+  },
   {
     label: "DashBoard",
     href: "/",
@@ -18,20 +26,6 @@ const baseNavItems = [
     label: "Add Job",
     href: "/add-job",
     icon: <PlusCircle className="w-4 h-4 mr-2" />,
-  },
-  {
-    label: "Application",
-    href: "/All-jobs",
-    icon: <ClipboardList className="w-4 h-4 mr-2" />,
-  }
-];
-
-// Auth-dependent navigation items
-const authNavItems = [
-  {
-    label: "Profile",
-    href: "/profile",
-    icon: <UserCircle className="w-4 h-4 mr-2" />,
   },
   {
     label: "Logout",
@@ -58,7 +52,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
    const { isLoggedIn } = useAuth();
-  
+  //const isLoggedIn = true;
 
   useEffect(() => {
     const handleScroll = () => {
