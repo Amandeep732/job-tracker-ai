@@ -1,5 +1,5 @@
 import { User } from "@/models/user.model";
-import { hash } from "bcryptjs";
+
 import connectDb from "@/lib/connectDB";
 
 export async function POST(req) {
