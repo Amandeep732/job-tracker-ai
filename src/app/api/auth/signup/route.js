@@ -1,5 +1,4 @@
 import { User } from "@/models/user.model";
-
 import connectDb from "@/lib/connectDB";
 
 export async function POST(req) {

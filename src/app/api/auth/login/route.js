@@ -7,37 +7,37 @@ export async function POST(req) {
     try {
         await connectDb();
         const { username, email, password } = await req.json();
-    
+
         if (!username && !email) {
             return Response.json(
                 { error: "please provide at least one username or email" },
                 { status: 400 }
             );
         }
-    
+
         const user = await User.findOne({
             $or: [{ email }, { username }]
         });
-    
+
         if (!user) {
             return Response.json({ error: "user does not exist" }, { status: 404 });
         }
-    
+
         const isPasswordValid = await user.isPasswordCorrect(password);
-    
+
         if (!isPasswordValid) {
             return Response.json({ error: "Invalid credentials" }, { status: 400 });
         }
-    
+
         const { accessToken, refreshToken } = await generateAccessandRefreshToken(user._id);
-    
-        await cookies().set("accessToken", accessToken, {
+        const cookieStore = await cookies()
+        cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 15,
             path: "/",
         });
-    
+
         return Response.json({
             message: "login successfully",
             user: {

@@ -1,16 +1,21 @@
 import connectDb from "@/lib/connectDB";
+import { redis } from "@/lib/redis";
 import { User } from "@/models/user.model";
 import { cookies } from "next/headers";
 
 export async function PATCH(req) {
     try {
         await connectDb()
+        const cookiesData = await cookies();
         const { password } = await req.json();
         if (!password) {
             return Response.json({ error: "Password is required" }, { status: 400 });
         }
-
-        const email = cookies().get("reset-email")?.value;
+        
+        const email =  cookiesData.get("reset-email")?.value;
+        console.log(`email from cookies ${email}`);
+        // console.log(`email from cookies ${cookiesData.get("reset-email")}`);
+        
         if (!email) {
             return Response.json({ error: "Email not found or OTP not verified" }, { status: 403 });
         }
@@ -36,7 +41,7 @@ export async function PATCH(req) {
             return Response.json({ error: "password does't change" }, { status: 500 })
         }
         await redis.del(`otp_verified:${email}`);
-        cookies().delete("reset-email")
+        cookiesData.delete("reset-email")
 
         return Response.json({ message: "Password has been successfully updated" }, { status: 200 });
 
