@@ -4,6 +4,15 @@ import { Job } from '@/models/job.model';
 import connectDb from '@/lib/connectDB';
 import { authenticateUserPages } from '../middlewares/authenticateUser';
 import { runMiddleware } from '@/lib/runMiddleware';
+import { logActivity } from '@/lib/logActivity';
+// ✅ AI imports for langchain
+
+// import { getEmbedding } from "@/lib/getEmbedding";
+// import { cosineSimilarity } from "@/lib/cosineSimilarity";
+// import { generateSummary, generateTips } from "@/lib/langchain/aiHelpers";
+// import pdfParse from "pdf-parse";
+// import fs from "fs";
+
 
 
 export const config = { api: { bodyParser: false } }
@@ -36,8 +45,7 @@ export default async function handler(req, res) {
     } = req.body;
 
     const userId = req.user?.id; // ✅ Got from token
-    
-    
+
     // ✅ Check for duplicate
     const existingJob = await Job.findOne({
       user: userId,
@@ -52,8 +60,46 @@ export default async function handler(req, res) {
     const pathName = req.file?.path;
     if (!pathName) return res.status(400).json({ error: "Resume is missing" });
 
+    // ✅ ✅ ✅ AI LOGIC STARTS HERE
+    // let resumeText = '';
+    // try {
+    //   const buffer = fs.readFileSync(pathName);
+    //   const pdfData = await pdfParse(buffer);
+    //   resumeText = pdfData.text;
+    //   // fs.unlinkSync(pathName);
+    // } catch (error) {
+    //   console.error("PDF parse error:", error);
+    //   return res.status(500).json({ error: "Failed to read resume file" });
+    // }
+
+
+
     const resume = await uploadOnCloudinary(pathName);
     if (!resume.url) return res.status(500).json({ error: "Cloudinary upload failed" });
+
+    // Generate embeddings & AI insights
+    // let summary = "";
+    // let tips = [];
+    // let matchScore = 0;
+
+    // try {
+    //   const [resumeEmb, jobEmb] = await Promise.all([
+    //     getEmbedding(resumeText),
+    //     getEmbedding(jobDesc)
+    //   ]);
+
+    //   matchScore = cosineSimilarity(resumeEmb, jobEmb) * 100;
+    //   summary = await generateSummary(jobDesc);
+    //   tips = await generateTips(resumeText, jobDesc);
+    // } catch (error) {
+    //   console.error("AI generation error:", error);
+    //   summary = "Summary not generated";
+    //   tips = ["No AI tips available"];
+    //   matchScore = 0;
+    //   return res.status(500).json({ error: "Failed to generate AI insights" });
+    // }
+
+    // ✅ ✅ ✅ AI LOGIC ENDS HERE
 
     const response = await Job.create({
       user: userId,
@@ -70,11 +116,15 @@ export default async function handler(req, res) {
       AiMatchScore: isNaN(Number(AiMatchScore)) ? null : Number(AiMatchScore),
     });
 
-    if(!response){
-      return res.status(500).json({error : "something went wrong during entry in job data in db "})
+    if (!response) {
+      return res.status(500).json({ error: "something went wrong during entry in job data in db " })
     }
+    await logActivity(userId, `Applied to ${companyName} for ${jobTitle}`)
 
-    return res.status(200).json({ message: "Job added successfully" });
+    return res.status(200).json({
+      message: "Job added successfully",
+      job: response
+    });
 
   } catch (err) {
     console.error("AddJob Error:", err);

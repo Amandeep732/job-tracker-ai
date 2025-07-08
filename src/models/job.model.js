@@ -41,7 +41,9 @@ const jobSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["Saved", "Applied", "Rejected"]
+        required : true,
+        default : "Saved",
+        enum: ["Saved", "interview", "Rejected"]
     },
     AiSummary: {
         type: String,

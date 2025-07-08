@@ -5,7 +5,7 @@ const key = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET);
 
 export async function verifyJwtMiddleware(request) {
     try {
-        //console.log("logout middleware is running");
+        console.log("logout middleware is running");
 
         const token = request.cookies.get("accessToken")?.value ||
             request.headers.get("Authorization")?.replace("Bearer ", "");

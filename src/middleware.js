@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server'
 import { verifyJwtMiddleware } from './middlewares/auth.middleware'
 
 const PROTECTED_PATHS = [
-  "/api/auth/logout", 
+  "/api/auth/logout",
   "/api/auth/changePassword",
-  "/api/jobs" // ✅ with leading slash
+  "/api/jobs", // ✅ with leading slash
+  "/api/user/me",
+  "/api/user/stats",
+  "/api/user/activity"
+
 ];
 
 export async function middleware(request) {
@@ -25,6 +29,9 @@ export const config = {
   matcher: [
     "/api/auth/logout",
     "/api/auth/changePassword",
-    "/api/jobs/:path*", // ✅ includes /api/jobs/123 etc.
+    "/api/jobs/:path*",
+    "/api/user/me",
+    "/api/user/stats",
+    "/api/user/activity" // ✅ includes /api/jobs/123 etc.
   ],
 };

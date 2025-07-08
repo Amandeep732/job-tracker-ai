@@ -4,6 +4,7 @@ import { runMiddleware } from "@/lib/runMiddleware";
 import { verifyJwtMiddlewarePages } from "@/pages/middlewares/verifyjwtpages";
 import { authenticateUserPages } from "@/pages/middlewares/authenticateUser";
 import { Job } from "@/models/job.model";
+import { logActivity } from "@/lib/logActivity";
 
 export const config = { api: { bodyParser: false } };
 
@@ -13,19 +14,18 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: "Method not allowed" });
     }
     try {
-        console.log("✅ Step 1: Connecting DB");
+
         await connectDb();
-        console.log("✅ Step 2: Running middleware");
-         await runMiddleware(req, res, verifyJwtMiddlewarePages);
-        console.log("✅ Step 3: Running middleware 2"); // to verify user is login or not
-        await runMiddleware(req, res, authenticateUserPages) // push user in req
+
+        await runMiddleware(req, res, verifyJwtMiddlewarePages);
+        await runMiddleware(req, res, authenticateUserPages)
 
         const userId = req.user?.id;
         const jobId = req.query.id;
 
         //verify only owner can delete job 
 
-        console.log("✅ Step 3: Fetching job from DB");
+       // console.log("✅ Step 3: Fetching job from DB");
 
         const jobDoc = await Job.findOne({ _id: jobId, user: userId });
 
@@ -52,6 +52,8 @@ export default async function handler(req, res) {
         if (!response) {
             return res.status(500).json({ error: "cannot delete job from db" })
         }
+
+        await logActivity(userId, `Deleted job: ${jobTitle} at ${companyName}`)
 
         return res.status(200).json({ message: "job is successfully deleted " })
 

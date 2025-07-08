@@ -31,15 +31,9 @@ export async function PATCH(req) {
             return Response.json({ error: "User does not exist" }, { status: 404 });
         }
 
-        const updated = await User.findByIdAndUpdate(user._id, {
-            $set: {
-                password: password
-            }
-        })
+        user.password = password;
+        await user.save({ validateBeforeSave: false })
 
-        if (!updated) {
-            return Response.json({ error: "password does't change" }, { status: 500 })
-        }
         await redis.del(`otp_verified:${email}`);
         cookiesData.delete("reset-email")
 

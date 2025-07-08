@@ -30,7 +30,7 @@ export default function Login() {
       if (!response.ok) {
         const errorData = await response.json();
         
-        throw new Error(errorData.message );
+        throw new Error(errorData.error );
       }
 
       router.push("/dashboard");

@@ -4,6 +4,7 @@ import { upload } from "@/lib/multer";
 import { runMiddleware } from "@/lib/runMiddleware";
 import { authenticateUserPages } from "@/pages/middlewares/authenticateUser";
 import { Job } from "@/models/job.model";
+import { logActivity } from '@/lib/logActivity';
 
 export const config = { api: { bodyParser: false } };
 
@@ -109,6 +110,16 @@ export default async function handler(req, res) {
             $set: updateFields,
         }, { new: true });
 
+
+        let message = `Updated job: ${jobTitle} at ${companyName}`;
+
+        if (isResumeUpdated) {
+            message += " (resume updated)";
+        }
+        if (status && status !== exsisting.status) {
+            message += `, status changed to ${status}`;
+        }
+        await logActivity(userId, message)
         return res.status(200).json({
             message: "Job updated successfully ✅",
             updatedFields: updateFields,
