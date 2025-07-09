@@ -13,30 +13,44 @@ export default function DashboardPage() {
   console.log(`total apps is ${stats.totalApps}`);
 
   const [activities, setActivities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // 💥
+
   const [user, setUser] = useState({ username: "" });
 
-  useEffect(() => {
-    fetch("/api/user/me")
-      .then((res) => res.json())
-      .then((data) => setUser(data))
-      .catch((err) => console.error(err));
-    // Fetch dashboard stats
-    fetch("/api/user/stats")
-      .then((res) => res.json())
-      .then((data) => {
-        //console.log("Stats Data:", data); // 👈 ADD THIS
-        setStats(data);
-      })
-      .catch((err) => console.error("Stats fetch error:", err));
-    // Fetch recent activities
-    fetch("/api/user/activity")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("activity is :", data);
-        setActivities(data.activities)
-      })
-      .catch((err) => console.error(err));
-  }, []);
+ useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      const [userRes, statsRes, activityRes] = await Promise.all([
+        fetch("/api/user/me"),
+        fetch("/api/user/stats"),
+        fetch("/api/user/activity"),
+      ]);
+
+      const userData = await userRes.json();
+      const statsData = await statsRes.json();
+      const activityData = await activityRes.json();
+
+      setUser(userData);
+      setStats(statsData);
+      setActivities(activityData.activities);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setIsLoading(false); // ✅ After all done
+    }
+  };
+
+  fetchAll();
+}, []);
+
+
+  if (isLoading) {
+    return (
+      <div className="p-6 text-center text-gray-600 dark:text-gray-300">
+        Loading your dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -57,7 +71,9 @@ export default function DashboardPage() {
           <h2 className="text-sm uppercase text-gray-500 dark:text-gray-400">
             Total Applications
           </h2>
-          <p className="text-3xl text-black font-bold mt-2">{stats.totalApps}</p>
+          <p className="text-3xl text-black font-bold mt-2">
+            {stats.totalApps}
+          </p>
         </div>
 
         {/* Interviews Scheduled Card */}
@@ -65,7 +81,9 @@ export default function DashboardPage() {
           <h2 className="text-sm uppercase text-gray-500 dark:text-gray-400">
             Interviews Scheduled
           </h2>
-          <p className="text-3xl text-black  font-bold mt-2">{stats.interviewsCount}</p>
+          <p className="text-3xl text-black  font-bold mt-2">
+            {stats.interviewsCount}
+          </p>
         </div>
 
         {/* Profile Completion Card */}
@@ -73,7 +91,9 @@ export default function DashboardPage() {
           <h2 className="text-sm uppercase text-gray-500 dark:text-gray-400">
             Profile Completion
           </h2>
-          <p className="text-3xl text-black  font-bold mt-2">{stats.profileCompletion}%</p>
+          <p className="text-3xl text-black  font-bold mt-2">
+            {stats.profileCompletion}%
+          </p>
         </div>
       </div>
 
@@ -88,7 +108,9 @@ export default function DashboardPage() {
                 className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center"
               >
                 <span className="mr-3">•</span>
-                <span className="text-gray-700 dark:text-gray-300">{act.message}</span>
+                <span className="text-gray-700 dark:text-gray-300">
+                  {act.message}
+                </span>
               </li>
             ))
           ) : (

@@ -1,20 +1,27 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export const authenticateUserPages = async (req, res, next) => {
-    try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ error: "Unauthorized. Token not found." });
-        }
-       // console.log(`authheader is ${authHeader}`);
-        const token = authHeader.split(" ")[1];
-        //console.log(`token is ${token}`);
+  try {
+    // ✅ First priority: Authorization header
+    let token;
+    const authHeader = req.headers.authorization;
 
-        const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-        req.user = decodedToken
-        next()
-
-    } catch (error) {
-        return res.status(401).json({ error: "Invalid or expired token." });
+    if (authHeader?.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    } else if (req.cookies?.accessToken) {
+      // ✅ From cookies (after cookie-parser middleware)
+      token = req.cookies.accessToken;
     }
-}
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized. Token not found." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    req.user = decoded;
+
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token." });
+  }
+};
