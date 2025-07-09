@@ -104,8 +104,8 @@ Respond in strict JSON format only:
     });
   } finally {
     // Clean up uploaded file
-    if (req.file?.path) {
-      fs.unlink(req.file.path, () => {});
+    if(req.file.path){
+     fs.unlinkSync(req.file.path);
     }
   }
 }
