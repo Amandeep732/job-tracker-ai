@@ -22,7 +22,7 @@ export async function GET(request) {
         if (!jobDocs || jobDocs.length === 0) {
             return NextResponse.json(
                 { message: "User has no existing jobs" },
-                { status: 404 }
+                { status: 200 }
             );
         }
 

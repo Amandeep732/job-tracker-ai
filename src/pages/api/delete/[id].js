@@ -22,7 +22,8 @@ export default async function handler(req, res) {
 
         const userId = req.user?.id;
         const jobId = req.query.id;
-
+        console.log(`job id is $${jobId}`)
+        console.log(`user id is $${userId}`)
         //verify only owner can delete job 
 
        // console.log("✅ Step 3: Fetching job from DB");
@@ -46,6 +47,8 @@ export default async function handler(req, res) {
                 return res.status(500).json({ error: "Internal Server error" })
             }
         }
+        const jobTitle = jobDoc.jobTitle;
+        const companyName = jobDoc.companyName
 
         const response = await Job.findByIdAndDelete(jobId)
 
@@ -58,7 +61,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ message: "job is successfully deleted " })
 
     } catch (error) {
-        console.error("delete job error:", err);
-        return res.status(500).json({ error: err.message });
+        console.error("delete job error:", error);
+        return res.status(500).json({ error: error.message });
     }
 }

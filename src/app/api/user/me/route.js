@@ -1,4 +1,5 @@
 import connectDb from "@/lib/connectDB";
+
 import { User } from "@/models/user.model";
 
 export async function GET(request) {

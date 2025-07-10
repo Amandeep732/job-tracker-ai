@@ -28,9 +28,9 @@ export async function GET(request) {
     }
 
     const totalApps = jobs.length;
-    const interviewsCount = jobs.filter((job) => job.status === "interview").length;
-    const profileCompletion = 80; // dummy for now
-
+    const interviewsCount = jobs.filter((job) => job.status === "Interview").length;
+    const profileCompletion = Math.ceil((Math.random() + 1) * 30); // dummy for now
+    
     return new Response(
       JSON.stringify({ totalApps, interviewsCount, profileCompletion }),
       { status: 200 }

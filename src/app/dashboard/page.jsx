@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { Trash2 } from "lucide-react";
 export default function DashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState({
@@ -10,39 +10,47 @@ export default function DashboardPage() {
     interviewsCount: 0,
     profileCompletion: 0,
   });
-  console.log(`total apps is ${stats.totalApps}`);
 
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // 💥
 
   const [user, setUser] = useState({ username: "" });
 
- useEffect(() => {
-  const fetchAll = async () => {
-    try {
-      const [userRes, statsRes, activityRes] = await Promise.all([
-        fetch("/api/user/me"),
-        fetch("/api/user/stats"),
-        fetch("/api/user/activity"),
-      ]);
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [userRes, statsRes, activityRes] = await Promise.all([
+          fetch("/api/user/me"),
+          fetch("/api/user/stats"),
+          fetch("/api/user/activity"),
+        ]);
 
-      const userData = await userRes.json();
-      const statsData = await statsRes.json();
-      const activityData = await activityRes.json();
+        const userData = await userRes.json();
+        const statsData = await statsRes.json();
+        const activityData = await activityRes.json();
+        console.log(statsData);
+        setUser(userData);
+        setStats(statsData);
+        setActivities(activityData.activities);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setIsLoading(false); // ✅ After all done
+      }
+    };
 
-      setUser(userData);
-      setStats(statsData);
-      setActivities(activityData.activities);
-    } catch (err) {
-      console.error("Error fetching dashboard data:", err);
-    } finally {
-      setIsLoading(false); // ✅ After all done
-    }
-  };
-
-  fetchAll();
-}, []);
-
+    fetchAll();
+  }, []);
+  const handleDeleteActivity = async (activityId) => {
+  try {
+    const response = await fetch(`/api/user/deleteActivity/${activityId}`, {
+      method: "DELETE",
+    });
+    setActivities(activities.filter((act)=> act._id !== activityId));
+  } catch (error) {
+    console.error("Error deleting activity:", error);
+  }
+};
 
   if (isLoading) {
     return (
@@ -101,16 +109,25 @@ export default function DashboardPage() {
       <div className="mb-8">
         <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
         <ul className="space-y-2">
-          {activities.length > 0 ? (
+          {activities?.length > 0 ? (
             activities.map((act, idx) => (
               <li
                 key={idx}
-                className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center"
+                className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm flex items-center justify-between"
               >
-                <span className="mr-3">•</span>
-                <span className="text-gray-700 dark:text-gray-300">
-                  {act.message}
-                </span>
+                <div className="flex items-center">
+                  <span className="mr-3">•</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {act.message}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleDeleteActivity(act._id)}
+                  className="text-red-500 cursor-pointer mr-4 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 ml-2"
+                  aria-label="Delete activity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </li>
             ))
           ) : (
@@ -124,7 +141,7 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <div>
         <button
-          onClick={() => router.push("/add-job")}
+          onClick={() => router.push("/dashboard/add")}
           className="px-5 cursor-pointer py-2 bg-pink-500 text-white rounded-2xl shadow hover:bg-pink-600"
         >
           Add New Job

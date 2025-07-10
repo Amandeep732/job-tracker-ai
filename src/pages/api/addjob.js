@@ -33,15 +33,15 @@ export default async function handler(req, res) {
 
     const {
       jobTitle,
-      jobLocation,
-      notes,
       companyName,
       jobDesc,
+      jobLocation,
+      notes,
       reminderDate,
       status,
-      AiSummary,
-      AiTips,
-      AiMatchScore
+      AiSummary = '', // Default empty string
+      AiTips = '[]', // Default empty array (as string)
+      AiMatchScore = '' // Default null
     } = req.body;
 
     const userId = req.user?.id; // ✅ Got from token
@@ -101,19 +101,22 @@ export default async function handler(req, res) {
 
     // ✅ ✅ ✅ AI LOGIC ENDS HERE
 
+    const parsedAiTips = typeof AiTips === 'string' ? JSON.parse(AiTips) : AiTips;
+
     const response = await Job.create({
       user: userId,
       jobTitle: jobTitle.toLowerCase().trim(),
-      jobLocation,
-      notes,
       companyName: companyName.trim(),
       jobDesc: jobDesc.trim(),
+      jobLocation,
+      notes,
       reminderDate,
       status,
       resumeFile: resume.url,
-      AiSummary: AiSummary || '',
-      AiTips: Array.isArray(AiTips) ? AiTips : [],
+      AiSummary,
+      AiTips: Array.isArray(parsedAiTips) ? parsedAiTips : [],
       AiMatchScore: isNaN(Number(AiMatchScore)) ? null : Number(AiMatchScore),
+      // ... other fields
     });
 
     if (!response) {

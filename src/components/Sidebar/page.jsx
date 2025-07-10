@@ -8,8 +8,7 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Applications", href: "/dashboard/applications" },
-  { label: "Add Job", href: "/dashboard/add" },
-  { label: "Settings", href: "/dashboard/settings" },
+  { label: "Add Job", href: "/dashboard/add" }
 ];
 
 export default function Sidebar() {

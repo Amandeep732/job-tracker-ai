@@ -11,13 +11,12 @@ const jobSchema = new Schema({
     },
     notes: {
         type: String
-    }, 
+    },
     jobTitle: {
         type: String,
         required: true,
-        //unique: true,
         lowercase: true,
-        trim: true,
+        trim: true
     },
     companyName: {
         type: String,
@@ -41,24 +40,29 @@ const jobSchema = new Schema({
     },
     status: {
         type: String,
-        required : true,
-        default : "Saved",
-        enum: ["Saved", "interview", "Rejected"]
+        required: true,
+        default: "Applied",
+        enum: ["Applied", "Interview", "Rejected"]
     },
     AiSummary: {
         type: String,
         default: ''
-        
+
     },
     AiTips: {
         type: [String],
         default: []
     },
     AiMatchScore: {
-        type: Number,
+        type: String,
         default: null
     }
 
 }, { timestamps: true })
+
+// jobSchema.index(
+//   { jobTitle: 1, user: 1 }, 
+//   { unique: true }
+// );
 
 export const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);

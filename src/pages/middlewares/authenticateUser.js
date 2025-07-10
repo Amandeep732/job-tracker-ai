@@ -7,6 +7,7 @@ export const authenticateUserPages = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader?.startsWith("Bearer ")) {
+      
       token = authHeader.split(" ")[1];
     } else if (req.cookies?.accessToken) {
       // ✅ From cookies (after cookie-parser middleware)
