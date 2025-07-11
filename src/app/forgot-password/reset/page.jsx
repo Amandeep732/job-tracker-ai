@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/updatePassword', {
+      const res = await api.patch('/api/auth/updatePassword', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include" ,

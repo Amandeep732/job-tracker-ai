@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function VerifyOtpPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/verifyOtp", {
+      const res = await api.post("/auth/verifyOtp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -60,7 +61,7 @@ export default function VerifyOtpPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/verifyOtp", {
+      const res = await api.post("/auth/verifyOtp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

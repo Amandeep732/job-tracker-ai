@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
 import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export default function JobTable() {
   const [jobs, setJobs] = useState([]);
@@ -12,8 +13,7 @@ export default function JobTable() {
   const fetchJobs = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("/api/jobs/getAll");
-
+      const res = await api.get("/jobs/getAll");
       setJobs(res.data?.message === "User has no existing jobs" ? [] : res.data);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -31,7 +31,7 @@ export default function JobTable() {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this job?")) return;
     try {
-      await axios.delete(`/api/delete/${id}`);
+      await api.delete(`/delete/${id}`);
       setJobs(jobs.filter((job) => job._id !== id));
     } catch (err) {
       console.error("Delete failed:", err);

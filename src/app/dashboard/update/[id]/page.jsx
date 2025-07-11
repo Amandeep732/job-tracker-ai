@@ -2,6 +2,8 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import api from "@/lib/api";
+
 
 export default function UpdateJobPage() {
   const { id } = useParams();
@@ -18,7 +20,7 @@ export default function UpdateJobPage() {
       setJob(JSON.parse(jobData));
       console.log(job);
     } else {
-      axios.get(`/api/jobs/${id}`).then((res) => setJob(res.data));
+      api.get(`/jobs/${id}`).then((res) => setJob(res.data));
     }
   }, [id, searchParams]);
 
@@ -42,7 +44,7 @@ export default function UpdateJobPage() {
     if (resumeFile) formData.append("resumeFile", resumeFile);
 
     try {
-      const res = await axios.patch(`/api/update/${id}`, formData, {
+      const res = await api.patch(`/update/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

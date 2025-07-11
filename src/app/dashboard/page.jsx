@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
+import api from "@/lib/api";
 export default function DashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState({
@@ -20,9 +21,9 @@ export default function DashboardPage() {
     const fetchAll = async () => {
       try {
         const [userRes, statsRes, activityRes] = await Promise.all([
-          fetch("/api/user/me"),
-          fetch("/api/user/stats"),
-          fetch("/api/user/activity"),
+          api.get("/user/me"),
+          api.get("/user/stats"),
+          api.get("/user/activity"),
         ]);
 
         const userData = await userRes.json();
@@ -43,7 +44,7 @@ export default function DashboardPage() {
   }, []);
   const handleDeleteActivity = async (activityId) => {
   try {
-    const response = await fetch(`/api/user/deleteActivity/${activityId}`, {
+    const response = await api.delete(`/user/deleteActivity/${activityId}`, {
       method: "DELETE",
     });
     setActivities(activities.filter((act)=> act._id !== activityId));

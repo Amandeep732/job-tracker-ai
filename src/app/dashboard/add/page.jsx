@@ -1,4 +1,5 @@
 "use client";
+import api from "@/lib/api";
 import axios from "axios";
 import { useState } from "react";
 
@@ -51,7 +52,7 @@ export default function AddJobForm() {
       form.append("AiTips", JSON.stringify(aiTips));
       form.append("AiMatchScore", aiMatchScore);
 
-      const res = await axios.post("/api/addjob", form, {
+      const res = await api.post("/addjob", form, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
@@ -93,7 +94,7 @@ export default function AddJobForm() {
       form.append("jobDesc", formData.jobDesc);
       form.append("resumeFile", formData.resumeFile);
 
-      const res = await axios.post("/api/ai/summarizer", form, {
+      const res = await api.post("/ai/summarizer", form, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

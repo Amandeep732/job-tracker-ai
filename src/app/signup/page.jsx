@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await api.post("/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

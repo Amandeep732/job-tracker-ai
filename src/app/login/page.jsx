@@ -1,4 +1,5 @@
 "use client";
+import api from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -19,7 +20,7 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await api.post("/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

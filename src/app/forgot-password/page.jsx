@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import api from "@/lib/api";
 export default function ForgotPasswordPage() {
   const router = useRouter();
 
@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
     setSuccessMsg("");
 
     try {
-      const res = await fetch("/api/auth/sendOtp", {
+      const res = await api.post("/auth/sendOtp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
