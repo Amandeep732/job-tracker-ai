@@ -11,16 +11,17 @@ export default function JobTable() {
   const router = useRouter();
 
   const fetchJobs = async () => {
-    setIsLoading(true);
-    try {
-      const res = await api.get("/jobs/getAll");
-      setJobs(res.data?.message === "User has no existing jobs" ? [] : res.data);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  setIsLoading(true);
+  try {
+    const res = await api.get("/jobs/getAll"); // ✅ Correct Axios GET
+    setJobs(res.data?.message === "User has no existing jobs" ? [] : res.data);
+  } catch (error) {
+    console.error("Fetch error:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => { fetchJobs(); }, []);
 
@@ -29,14 +30,15 @@ export default function JobTable() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this job?")) return;
-    try {
-      await api.delete(`/delete/${id}`);
-      setJobs(jobs.filter((job) => job._id !== id));
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
-  };
+  if (!window.confirm("Delete this job?")) return;
+  try {
+    await api.delete(`/delete/${id}`); // ✅ Correct Axios DELETE call
+    setJobs(jobs.filter((job) => job._id !== id));
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+};
+
 
   return (
     <div className="w-full overflow-x-auto">

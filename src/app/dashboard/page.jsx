@@ -18,40 +18,41 @@ export default function DashboardPage() {
   const [user, setUser] = useState({ username: "" });
 
   useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [userRes, statsRes, activityRes] = await Promise.all([
-          api.get("/user/me"),
-          api.get("/user/stats"),
-          api.get("/user/activity"),
-        ]);
+  const fetchAll = async () => {
+    try {
+      const [userRes, statsRes, activityRes] = await Promise.all([
+        api.get("/user/me"),
+        api.get("/user/stats"),
+        api.get("/user/activity"),
+      ]);
 
-        const userData = await userRes.json();
-        const statsData = await statsRes.json();
-        const activityData = await activityRes.json();
-        console.log(statsData);
-        setUser(userData);
-        setStats(statsData);
-        setActivities(activityData.activities);
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-      } finally {
-        setIsLoading(false); // ✅ After all done
-      }
-    };
+      const userData = userRes.data;
+      const statsData = statsRes.data;
+      const activityData = activityRes.data;
 
-    fetchAll();
-  }, []);
-  const handleDeleteActivity = async (activityId) => {
+      console.log(statsData);
+      setUser(userData);
+      setStats(statsData);
+      setActivities(activityData.activities);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setIsLoading(false); // ✅ After all done
+    }
+  };
+
+  fetchAll();
+}, []);
+
+const handleDeleteActivity = async (activityId) => {
   try {
-    const response = await api.delete(`/user/deleteActivity/${activityId}`, {
-      method: "DELETE",
-    });
-    setActivities(activities.filter((act)=> act._id !== activityId));
+    await api.delete(`/user/deleteActivity/${activityId}`); // ✅ Axios handles it directly
+    setActivities(activities.filter((act) => act._id !== activityId));
   } catch (error) {
     console.error("Error deleting activity:", error);
   }
 };
+
 
   if (isLoading) {
     return (

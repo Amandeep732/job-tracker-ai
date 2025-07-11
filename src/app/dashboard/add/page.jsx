@@ -1,6 +1,5 @@
 "use client";
 import api from "@/lib/api";
-import axios from "axios";
 import { useState } from "react";
 
 export default function AddJobForm() {
@@ -34,37 +33,35 @@ export default function AddJobForm() {
   };
 
   const handleAddJob = async () => {
-    try {
-      setError(null);
-      setLoading(true);
+  try {
+    setError(null);
+    setLoading(true);
 
-      const form = new FormData();
-      // Append all form fields
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          console.log(key, value)
-          form.append(key, value);
-        }
-      });
+    const form = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        console.log(key, value);
+        form.append(key, value);
+      }
+    });
 
-      // Append AI-generated data
-      form.append("AiSummary", aiSummary);
-      form.append("AiTips", JSON.stringify(aiTips));
-      form.append("AiMatchScore", aiMatchScore);
+    form.append("AiSummary", aiSummary);
+    form.append("AiTips", JSON.stringify(aiTips));
+    form.append("AiMatchScore", aiMatchScore);
 
-      const res = await api.post("/addjob", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+    const res = await api.post("/addjob", form, {
+      headers: { "Content-Type": "multipart/form-data" }, // ✅ Only this kept
+    });
 
-      setSuccess("Job added with AI insights!");
-      resetForm();
-    } catch (error) {
-      setError(error.response?.data?.error || "Failed to add job");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setSuccess("Job added with AI insights!");
+    resetForm();
+  } catch (error) {
+    setError(error.response?.data?.error || "Failed to add job");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const resetForm = () => {
     setFormData({
@@ -82,40 +79,40 @@ export default function AddJobForm() {
   };
 
   const handleGenerateAI = async () => {
-    if (!formData.jobDesc || !formData.resumeFile) {
-      setError("Please add job description and resume first");
-      return;
+  if (!formData.jobDesc || !formData.resumeFile) {
+    setError("Please add job description and resume first");
+    return;
+  }
+
+  setLoading(true);
+  setError(null);
+  try {
+    const form = new FormData();
+    form.append("jobDesc", formData.jobDesc);
+    form.append("resumeFile", formData.resumeFile);
+
+    const res = await api.post("/ai/summarizer", form, {
+      headers: { "Content-Type": "multipart/form-data" }, // ✅ Just kept this
+    });
+
+    setAiSummary(res.data.summary || "");
+    setAiTips(res.data.resumeTips || []);
+    setAiMatchScore(res.data.fitAnalysis || "");
+  } catch (error) {
+    if (error.response?.status === 429) {
+      setError(
+        "⚠️ You're hitting the AI usage limit. Please wait and try again later."
+      );
+    } else {
+      setError(
+        error.response?.data?.error || "Failed to generate AI insights"
+      );
     }
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-    setError(null);
-    try {
-      const form = new FormData();
-      form.append("jobDesc", formData.jobDesc);
-      form.append("resumeFile", formData.resumeFile);
-
-      const res = await api.post("/ai/summarizer", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-
-      setAiSummary(res.data.summary || "");
-      setAiTips(res.data.resumeTips || []);
-      setAiMatchScore(res.data.fitAnalysis || "");
-    } catch (error) {
-      if (error.response?.status === 429) {
-        setError(
-          "⚠️ You're hitting the AI usage limit. Please wait and try again later."
-        );
-      } else {
-        setError(
-          error.response?.data?.error || "Failed to generate AI insights"
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8 bg-zinc-900 text-white rounded-2xl shadow-lg">

@@ -15,32 +15,21 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const response = await api.post("/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const response = await api.post("/auth/login", formData); // ✅ Axios auto handles headers & JSON
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        
-        throw new Error(errorData.error );
-      }
+    router.push("/dashboard");
+  } catch (err) {
+    setError(err.response?.data?.error || err.message); // ✅ Show backend error
+  } finally {
+    setLoading(false);
+  }
+};
 
-      router.push("/dashboard");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#1a1a1a] to-[#3b0112] flex flex-col justify-center py-12 sm:px-6 lg:px-8">

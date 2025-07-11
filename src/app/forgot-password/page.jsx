@@ -10,37 +10,27 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    setSuccessMsg("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+  setSuccessMsg("");
 
-    try {
-      const res = await api.post("/auth/sendOtp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-        credentials: "include",
-      });
+  try {
+    const res = await api.post("/auth/sendOtp", { email }); // ✅ Clean Axios POST
 
-      if (!res.ok) {
-        const data = await res.json();
-        console.log(data.message);
-        throw new Error(data.message || "Something went wrong");
-      }
-      localStorage.setItem("resetEmail", email);
+    localStorage.setItem("resetEmail", email);
+    setSuccessMsg("OTP sent successfully!");
+    setTimeout(() => {
+      router.push("/forgot-password/verify-otp");
+    }, 100);
+  } catch (err) {
+    setError(err.response?.data?.message || err.message); // ✅ Show backend error
+  } finally {
+    setLoading(false);
+  }
+};
 
-      setSuccessMsg("OTP sent successfully!");
-      setTimeout(() => {
-        router.push("/forgot-password/verify-otp");
-      }, 100);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#2b0012] px-4">

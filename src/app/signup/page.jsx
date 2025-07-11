@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
+import axios from "axios";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -24,32 +25,20 @@ export default function RegisterPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const response = await api.post("/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+  try {
+    const response = await api.post("/auth/signup", formData);
+    router.push("/login");
+  } catch (err) {
+    setError(err.response?.data?.error || err.message);  // ✅ Show backend error
+  } finally {
+    setLoading(false);
+  }
+};
 
-      if (!response.ok) {
-        const errorData = await response.json();    
-        throw new Error(errorData.error || "Registration failed");
-      }
-
-      // Redirect on success
-      router.push("/login");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#1b1b1e] flex items-center justify-center p-4">

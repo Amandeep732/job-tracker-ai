@@ -10,34 +10,27 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      const res = await api.patch('/auth/updatePassword', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: "include" ,
-        body: JSON.stringify({ password }),
-      });
+  try {
+    const res = await api.patch('/auth/updatePassword', { password }); // ✅ Axios PATCH
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong');
-      }
-      localStorage.removeItem('resetEmail'); 
-
-
-      // Success → go to login
-      router.push('/login');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (res.status !== 200) {
+      throw new Error(res.data?.error || 'Something went wrong');
     }
-  };
+
+    localStorage.removeItem('resetEmail');
+
+    router.push('/login');
+  } catch (err) {
+    setError(err.response?.data?.error || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] px-4">

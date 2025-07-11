@@ -31,51 +31,41 @@ export default function VerifyOtpPage() {
     }
   }, [timer]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const res = await api.post("/auth/verifyOtp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, otp }),
-      });
+  try {
+    const res = await api.post("/auth/verifyOtp", { email, otp }); // ✅ Axios POST
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "OTP verification failed");
+    // Axios parses JSON automatically → use res.data
+    if (res.status !== 200) throw new Error(res.data.message || "OTP verification failed");
 
-      router.push("/forgot-password/reset");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    router.push("/forgot-password/reset");
+  } catch (err) {
+    setError(err.response?.data?.message || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleResend = async () => {
-    setResendEnabled(false);
-    setTimer(60);
-    setError("");
+const handleResend = async () => {
+  setResendEnabled(false);
+  setTimer(60);
+  setError("");
 
-    try {
-      const res = await api.post("/auth/verifyOtp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email }),
-      });
+  try {
+    const res = await api.post("/auth/verifyOtp", { email }); // ✅ Axios POST
 
-      const data = await res.json();
+    if (res.status !== 200) throw new Error(res.data.message || "Failed to resend OTP");
 
-      if (!res.ok) throw new Error(data.message || "Failed to resend OTP");
-      localStorage.removeItem("resetEmail");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    localStorage.removeItem("resetEmail");
+  } catch (err) {
+    setError(err.response?.data?.message || err.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0e0e0e] px-4">

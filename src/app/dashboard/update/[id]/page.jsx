@@ -1,6 +1,7 @@
 "use client";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import api from "@/lib/api";
 
 
@@ -29,31 +30,30 @@ export default function UpdateJobPage() {
   };
 
   // 3. Form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append("jobTitle", e.target.jobTitle.value);
-    formData.append("companyName", e.target.companyName.value);
-    formData.append("jobDesc", e.target.jobDesc.value);
-    formData.append("jobLocation", e.target.jobLocation.value);
-    formData.append("status", e.target.status.value);
-    // Append all other fields...
-    if (resumeFile) formData.append("resumeFile", resumeFile);
+  const formData = new FormData();
+  formData.append("jobTitle", e.target.jobTitle.value);
+  formData.append("companyName", e.target.companyName.value);
+  formData.append("jobDesc", e.target.jobDesc.value);
+  formData.append("jobLocation", e.target.jobLocation.value);
+  formData.append("status", e.target.status.value);
+  if (resumeFile) formData.append("resumeFile", resumeFile);
 
-    try {
-      const res = await api.patch(`/update/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-      router.push("/dashboard?updated=true");
-    } catch (err) {
-      console.error("Update failed:", err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  try {
+    const res = await api.patch(`/update/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" }, // ✅ only line updated
+    });
+    router.push("/dashboard?updated=true");
+  } catch (err) {
+    console.error("Update failed:", err);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   if (!job) return <div className="p-6">Loading...</div>;
 

@@ -4,19 +4,20 @@ import connectDb from "@/lib/connectDB";
 export async function POST(req) {
     try {
         await connectDb();
+        const body = await req.json();
+        const { username, email, password, fullName  } = body;
 
-        const { username, email, password, fullName } = await req.json();
-
-        if (!username || !email || !password) {
-            return Response.json({ error: "Missing field" }, { status: 400 });
+        if ( !email || !password || !username) {
+            return new Response("Missing fields", { status: 400 });
         }
+
 
         const exsisting = await User.findOne({ username });
         if (exsisting) {
             return Response.json({ error: "user already exists" }, { status: 409 });
         }
 
-      // const hashedpassword = await hash(password, 10);
+        // const hashedpassword = await hash(password, 10);
         const user = await User.create({
             fullName: fullName || "",
             username,
