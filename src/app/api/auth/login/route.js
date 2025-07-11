@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 export async function POST(req) {
     try {
+        await cors(req, res);
         await connectDb();
         const { username, email, password } = await req.json();
 
@@ -33,13 +34,15 @@ export async function POST(req) {
         const cookieStore = await cookies()
         cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 15,
             path: "/",
+            secure: process.env.NODE_ENV === "production",  // ✅ Important
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
         });
         cookieStore.set("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: process.env.NODE_ENV === "production",  // ✅ Important
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
             maxAge: 60 * 15,
             path: "/",
         });
