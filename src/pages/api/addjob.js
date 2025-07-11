@@ -115,8 +115,7 @@ export default async function handler(req, res) {
       resumeFile: resume.url,
       AiSummary,
       AiTips: Array.isArray(parsedAiTips) ? parsedAiTips : [],
-      AiMatchScore: isNaN(Number(AiMatchScore)) ? null : Number(AiMatchScore),
-      // ... other fields
+      AiMatchScore:isNaN(Number(AiMatchScore)) ? null : Number(AiMatchScore)
     });
 
     if (!response) {

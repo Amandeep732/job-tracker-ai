@@ -8,7 +8,7 @@ export default function TopNavbar() {
   const handleLogout = () => {
     document.cookie =
       "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/login");
+    router.push("/");
   };
 
   return (
@@ -16,7 +16,7 @@ export default function TopNavbar() {
       <h1 className="text-xl font-semibold">📊 Dashboard</h1>
       <button
         onClick={handleLogout}
-        className="bg-[#f02e65] hover:bg-[#d42b59] px-4 py-1 rounded text-white"
+        className="bg-[#f02e65] cursor-pointer hover:bg-[#d42b59] px-4 py-1 rounded text-white"
       >
         Logout
       </button>

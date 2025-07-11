@@ -25,6 +25,7 @@ export async function GET(request) {
                 { status: 200 }
             );
         }
+        console.log(`all jobs is ${jobDocs}`)
 
         return NextResponse.json(jobDocs, { status: 200 });
 

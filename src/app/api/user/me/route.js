@@ -4,6 +4,8 @@ import { User } from "@/models/user.model";
 
 export async function GET(request) {
   try {
+    console.log("🔍 /api/user/me hit");
+
     await connectDb();
 
     // jwt verify middleware run behind the scene and put user id in header

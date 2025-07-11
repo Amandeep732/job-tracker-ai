@@ -22,7 +22,7 @@ export const generateTokens = (userId) => {
         REFRESH_SECRET,
         {
             expiresIn: process.env.JWT_REFRESH_EXPIRY
-        });
+    });
 
     return { accessToken, refreshToken };
 

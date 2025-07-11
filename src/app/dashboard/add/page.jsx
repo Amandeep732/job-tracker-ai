@@ -100,7 +100,7 @@ export default function AddJobForm() {
 
       setAiSummary(res.data.summary || "");
       setAiTips(res.data.resumeTips || []);
-      setAiMatchScore(res.data.fitAnalysis || null);
+      setAiMatchScore(res.data.fitAnalysis || "");
     } catch (error) {
       if (error.response?.status === 429) {
         setError(

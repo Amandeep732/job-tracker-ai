@@ -7,8 +7,7 @@ const PROTECTED_PATHS = [
   "/api/jobs", // ✅ with leading slash
   "/api/user/me",
   "/api/user/stats",
-  "/api/user/activity"
-
+  "/api/user/activity",
 ];
 
 export async function middleware(request) {
@@ -32,6 +31,6 @@ export const config = {
     "/api/jobs/:path*",
     "/api/user/me",
     "/api/user/stats",
-    "/api/user/activity" // ✅ includes /api/jobs/123 etc.
+    "/api/user/activity",
   ],
 };

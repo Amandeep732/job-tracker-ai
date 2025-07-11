@@ -37,6 +37,12 @@ export async function POST(req) {
             maxAge: 60 * 15,
             path: "/",
         });
+        cookieStore.set("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 60 * 15,
+            path: "/",
+        });
 
         return Response.json({
             message: "login successfully",

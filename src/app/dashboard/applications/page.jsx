@@ -13,6 +13,7 @@ export default function JobTable() {
     setIsLoading(true);
     try {
       const res = await axios.get("/api/jobs/getAll");
+
       setJobs(res.data?.message === "User has no existing jobs" ? [] : res.data);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -54,7 +55,7 @@ export default function JobTable() {
           ) : jobs?.length === 0 ? (
             <tr><td colSpan="4" className="text-center p-4 text-gray-500">No jobs found.</td></tr>
           ) : (
-            jobs?.map((job) => (
+            jobs.map((job) => (
               <tr key={job._id} className="">
                 <td className="p-3 border-b">{job.jobTitle}</td>
                 <td className="p-3 border-b">{job.companyName}</td>

@@ -1,7 +1,13 @@
+
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import Image from 'next/image';
 
 export function Hero() {
+  const router = useRouter();
+  const handleClick = () => {
+    router.push("/signup")
+  }
   return (
     <section className="bg-gradient-to-r from-[#1a1a1a] to-[#3b0112] py-20 px-4">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
@@ -14,7 +20,9 @@ export function Hero() {
             and optimize your profile automatically.
           </p>
           <div className="flex gap-4">
-            <Button className="bg-[#f02e65] cursor-pointer hover:bg-[#d82555] text-white px-8 py-6 text-lg">
+            <Button
+             onClick = {() => handleClick()}
+             className="bg-[#f02e65] cursor-pointer hover:bg-[#d82555] text-white px-8 py-6 text-lg">
               Get Started
             </Button>
           </div>
