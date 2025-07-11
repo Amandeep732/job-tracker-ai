@@ -2,54 +2,55 @@ import jwt from "jsonwebtoken";
 
 export const generateTokens = (userId) => {
   try {
-    // 1. Validate environment variables
+    // Debug: Log critical variables
+    console.log("Token generation started with:", {
+      NODE_ENV: process.env.NODE_ENV,
+      hasAccessSecret: !!process.env.JWT_ACCESS_SECRET,
+      hasRefreshSecret: !!process.env.JWT_REFRESH_SECRET,
+      userId: userId,
+      userIdType: typeof userId
+    });
+
+    // Validate inputs
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
-      throw new Error("JWT secrets not configured");
+      throw new Error("JWT secrets not configured in environment variables");
     }
 
-    // 2. Validate userId
-    if (!userId || typeof userId !== "string") {
+    if (!userId || typeof userId.toString !== 'function') {
       throw new Error(`Invalid userId: ${userId}`);
     }
 
-    console.log("Generating tokens with:", {
-      accessSecret: !!process.env.JWT_ACCESS_SECRET,
-      refreshSecret: !!process.env.JWT_REFRESH_SECRET,
-      accessExpiry: process.env.JWT_ACCESS_EXPIRY,
-      refreshExpiry: process.env.JWT_REFRESH_EXPIRY,
-      userId: userId
-    });
+    // Convert userId to string if needed
+    const userIdStr = userId.toString();
 
-    // 3. Generate tokens
+    // Generate tokens with safe defaults
     const accessToken = jwt.sign(
-      { id: userId },
+      { id: userIdStr },
       process.env.JWT_ACCESS_SECRET,
-      { 
-        expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" // Default fallback
-      }
+      { expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" }
     );
 
     const refreshToken = jwt.sign(
-      { id: userId },
+      { id: userIdStr },
       process.env.JWT_REFRESH_SECRET,
-      { 
-        expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d" // Default fallback
-      }
+      { expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d" }
     );
 
     return { accessToken, refreshToken };
 
   } catch (error) {
-    console.error("❌ Token generation failed:", {
+    console.error("❌ CRITICAL TOKEN GENERATION FAILURE:", {
       error: error.message,
       stack: error.stack,
       environment: {
-        ACCESS_SECRET: !!process.env.JWT_ACCESS_SECRET,
-        REFRESH_SECRET: !!process.env.JWT_REFRESH_SECRET,
-        NODE_ENV: process.env.NODE_ENV
+        NODE_ENV: process.env.NODE_ENV,
+        JWT_SECRETS_AVAILABLE: {
+          access: !!process.env.JWT_ACCESS_SECRET,
+          refresh: !!process.env.JWT_REFRESH_SECRET
+        }
       },
       input: {
-        userId: userId,
+        originalUserId: userId,
         userIdType: typeof userId
       }
     });
