@@ -1,7 +1,6 @@
 "use client";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import api from "@/lib/api";
 
 

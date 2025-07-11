@@ -15,7 +15,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await api.patch('/api/auth/updatePassword', {
+      const res = await api.patch('/auth/updatePassword', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include" ,
