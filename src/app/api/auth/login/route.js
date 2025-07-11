@@ -2,10 +2,10 @@ import { User } from "@/models/user.model";
 import connectDb from "@/lib/connectDB";
 import { generateAccessandRefreshToken } from "@/lib/generateTokens";
 import { cookies } from "next/headers";
-
+import cors from "cors"
 export async function POST(req) {
     try {
-        await cors(req, res);
+        await cors();
         await connectDb();
         const { username, email, password } = await req.json();
 
