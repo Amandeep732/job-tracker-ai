@@ -1,10 +1,10 @@
 import { deleteFromCloudinary } from "@/lib/cloudinary";
 import connectDb from "@/lib/connectDB";
 import { runMiddleware } from "@/lib/runMiddleware";
-import { verifyJwtMiddlewarePages } from "@/pages/middlewares/verifyjwtpages";
-import { authenticateUserPages } from "@/pages/middlewares/authenticateUser";
 import { Job } from "@/models/job.model";
 import { logActivity } from "@/lib/logActivity";
+import { authenticateUserPages } from "@/middlewares/authenticateUser";
+import { verifyJwtMiddlewarePages } from "@/middlewares/verifyjwtpages";
 
 export const config = { api: { bodyParser: false } };
 

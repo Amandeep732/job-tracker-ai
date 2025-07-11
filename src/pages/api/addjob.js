@@ -2,9 +2,9 @@ import { upload } from '@/lib/multer';
 import { uploadOnCloudinary } from '@/lib/cloudinary';
 import { Job } from '@/models/job.model';
 import connectDb from '@/lib/connectDB';
-import { authenticateUserPages } from '../middlewares/authenticateUser';
 import { runMiddleware } from '@/lib/runMiddleware';
 import { logActivity } from '@/lib/logActivity';
+import { authenticateUserPages } from '@/middlewares/authenticateUser';
 // ✅ AI imports for langchain
 
 // import { getEmbedding } from "@/lib/getEmbedding";
