@@ -40,22 +40,28 @@ export async function POST(req) {
       },
     });
 
-    // ✅ Set accessToken cookie
+    // Fixed cookie settings for Vercel production
+    const isProduction = process.env.NODE_ENV === "production";
+    const cookieDomain = isProduction ? "https://job-tracker-nine-henna.vercel.app" : undefined;
+
+    // Set accessToken cookie
     response.cookies.set("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: true, // Always true for Vercel
+      sameSite: "none", // Required for cross-origin on Vercel
       path: "/",
       maxAge: 60 * 15, // 15 minutes
+      domain: cookieDomain // Only set domain in production
     });
 
-    // ✅ Set refreshToken cookie
+    // Set refreshToken cookie
     response.cookies.set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: true, // Always true for Vercel
+      sameSite: "none", // Required for cross-origin on Vercel
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
+      domain: cookieDomain // Only set domain in production
     });
 
     return response;
