@@ -1,64 +1,66 @@
 import { User } from "@/models/user.model";
 import connectDb from "@/lib/connectDB";
 import { generateAccessandRefreshToken } from "@/lib/generateTokens";
-import { cookies } from "next/headers";
-import cors from "cors"
+import { NextResponse } from "next/server";
+
 export async function POST(req) {
-    try {
-        await cors();
-        await connectDb();
-        const { username, email, password } = await req.json();
+  try {
+    await connectDb();
 
-        if (!username && !email) {
-            return Response.json(
-                { error: "please provide at least one username or email" },
-                { status: 400 }
-            );
-        }
+    const { username, email, password } = await req.json();
 
-        const user = await User.findOne({
-            $or: [{ email }, { username }]
-        });
-
-        if (!user) {
-            return Response.json({ error: "user does not exist" }, { status: 404 });
-        }
-
-        const isPasswordValid = await user.isPasswordCorrect(password);
-
-        if (!isPasswordValid) {
-            return Response.json({ error: "Invalid credentials" }, { status: 400 });
-        }
-
-        const { accessToken, refreshToken } = await generateAccessandRefreshToken(user._id);
-        const cookieStore = await cookies()
-        cookieStore.set("accessToken", accessToken, {
-            httpOnly: true,
-            maxAge: 60 * 15,
-            path: "/",
-            secure: process.env.NODE_ENV === "production",  // ✅ Important
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        });
-        cookieStore.set("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",  // ✅ Important
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-            maxAge: 60 * 15,
-            path: "/",
-        });
-
-        return Response.json({
-            message: "login successfully",
-            user: {
-                _id: user._id,
-                email: user.email,
-                username: user.username,
-            },
-            accessToken,
-            refreshToken
-        }, { status: 200 });
-    } catch (error) {
-        console.error("Login error:", error);
-        return Response.json({ error: "Internal server error" }, { status: 500 });
+    if (!username && !email) {
+      return NextResponse.json(
+        { error: "Please provide username or email" },
+        { status: 400 }
+      );
     }
+
+    const user = await User.findOne({
+      $or: [{ email }, { username }],
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User does not exist" }, { status: 404 });
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 400 });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessandRefreshToken(user._id);
+
+    const response = NextResponse.json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+    });
+
+    // ✅ Set accessToken cookie
+    response.cookies.set("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
+      maxAge: 60 * 15, // 15 minutes
+    });
+
+    // ✅ Set refreshToken cookie
+    response.cookies.set("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Login error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
