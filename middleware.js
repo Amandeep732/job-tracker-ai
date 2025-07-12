@@ -31,14 +31,17 @@ export async function middleware(request) {
         { status: 500 }
       );
     }
+    const isProduction = process.env.NODE_ENV === "production";
+    const cookieDomain = isProduction ? "job-tracker-nine-henna.vercel.app" : undefined;
 
     // ✅ Set user ID in cookie instead of header
     const response = NextResponse.next();
     response.cookies.set("userId", payload.id, {
       httpOnly: true,
       path: "/",
+      sameSite: "none", 
       secure: true,
-      sameSite: "lax",
+      domain: cookieDomain 
     });
 
     return response;
