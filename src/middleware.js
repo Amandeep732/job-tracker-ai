@@ -1,23 +1,50 @@
 import { NextResponse } from 'next/server'
-import { verifyJwtMiddleware } from './middlewares/auth.middleware'
+import { jwtVerify } from "jose";
 
-const PROTECTED_PATHS = [
-  "/api/auth/logout",
-  "/api/jobs", // ✅ with leading slash
-  "/api/user/me",
-  "/api/user/stats",
-  "/api/user/activity",
-];
+// const PROTECTED_PATHS = [
+//   "/api/auth/logout",
+//   "/api/jobs", // ✅ with leading slash
+//   "/api/user/me",
+//   "/api/user/stats",
+//   "/api/user/activity",
+// ];
+const key = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET);
 
 export async function middleware(request) {
-  const path = request.nextUrl.pathname;
-  console.log(`Middleware running for: ${request.nextUrl.pathname}`);
+  
+    console.log(`Middleware running for: ${request.nextUrl.pathname}`);
 
-  // ✅ correct startsWith direction
-  const isProtected = PROTECTED_PATHS.some((p) => path.startsWith(p));
+    try {
+    const token =
+      request.cookies.get("accessToken")?.value ||
+      request.headers.get("Authorization")?.replace("Bearer ", "");
 
-  if (isProtected) {
-    return verifyJwtMiddleware(request);
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    const { payload } = await jwtVerify(token, key);
+
+    if (!payload) {
+      return NextResponse.json(
+        { error: "token not decoded" },
+        { status: 500 }
+      );
+    }
+
+    // ✅ Set user ID in cookie instead of header
+    const response = NextResponse.next();
+    response.cookies.set("userId", payload.id, {
+      httpOnly: true,
+      path: "/",
+      secure: true,
+      sameSite: "lax",
+    });
+
+    return response;
+  } catch (error) {
+    console.error("❌ Token verification failed:", error.message);
+    return new NextResponse("Unauthorized token", { status: 401 });
   }
 
   return NextResponse.next();
