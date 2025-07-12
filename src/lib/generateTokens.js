@@ -5,7 +5,7 @@ export const generateAccessandRefreshToken = async function (userId) {
     try {
         const user = await User.findById(userId);
         const { accessToken, refreshToken } = generateTokens(user._id.toString())
-
+    
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false })
 
