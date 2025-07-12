@@ -9,7 +9,7 @@ export async function GET(request) {
     await connectDb();
 
     // jwt verify middleware run behind the scene and put user id in header
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get("x-middleware-request-user-id");
     console.log(`userid is me route ${userId}`)
     if (!userId) {
       return new Response(

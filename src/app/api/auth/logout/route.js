@@ -7,7 +7,7 @@ export async function POST(request) {
     try {
         await connectDb();
     
-        const userId = request.headers.get('x-user-id');
+        const userId = request.headers.get('x-middleware-request-user-id');
         if (!userId) {
             return NextResponse.json(
                 { error: "User id not found" },

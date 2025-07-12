@@ -6,7 +6,7 @@ export async function GET(request) {
     await connectDb();
 
     // User ID from header set by JWT middleware
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get("x-middleware-request-user-id");
     console.log('user is ', userId);
     
     if (!userId) {

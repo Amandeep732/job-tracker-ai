@@ -22,7 +22,7 @@ export async function verifyJwtMiddleware(request) {
         console.log("Token received:", payload);
 
         const requestHeaders = new Headers(request.headers);
-        requestHeaders.set("x-user-id", payload.id);
+        requestHeaders.set("x-middleware-request-user-id", payload.id);
 
 
         return NextResponse.next({

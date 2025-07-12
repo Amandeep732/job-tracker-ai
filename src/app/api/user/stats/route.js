@@ -5,7 +5,7 @@ export async function GET(request) {
   try {
     await connectDb();
 
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get("x-middleware-request-user-id");
 
     if (!userId) {
       return new Response(

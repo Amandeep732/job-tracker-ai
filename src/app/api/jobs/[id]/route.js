@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
         const jobId = params.id;
         console.log(`doc id : ${jobId}`);
         
-        const userId = request.headers.get("x-user-id");
+        const userId = request.headers.get("x-middleware-request-user-id");
         console.log(`user id is : ${userId}`);
         
         const jobDocs = await Job.findOne({ _id: jobId, user: userId })
