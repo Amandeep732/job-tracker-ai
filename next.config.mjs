@@ -4,6 +4,7 @@ const nextConfig = {
   middleware: {
     env: ['JWT_ACCESS_SECRET'],
   },
+  bundlePagesRouterDependencies: true,
 };
 
 export default nextConfig;

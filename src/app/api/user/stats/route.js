@@ -44,3 +44,4 @@ export async function GET(request) {
     );
   }
 }
+export const runtime = 'edge';

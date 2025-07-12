@@ -52,6 +52,7 @@ console.log("🟢 Middleware file loaded");
 
 
 // ✅ Matcher for all relevant API routes
+
 export const config = {
   matcher: [
     "/api/auth/logout",
@@ -61,3 +62,4 @@ export const config = {
     "/api/user/activity",
   ],
 };
+
