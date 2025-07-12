@@ -4,7 +4,7 @@ import { Job } from "@/models/job.model";
 export async function GET(request) {
   try {
     await connectDb();
-    console.log(`job is ${Job}`)
+    //console.log(`job is ${Job}`)
 
     const userId = request.cookies.get("userId")?.value;
 
@@ -45,4 +45,4 @@ export async function GET(request) {
     );
   }
 }
-export const runtime = 'edge';
+
