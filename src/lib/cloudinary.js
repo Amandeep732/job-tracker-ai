@@ -18,7 +18,7 @@ export const uploadOnCloudinary = async function (filePath) {
     console.log("🕒 Local timestamp:", Math.floor(Date.now() / 1000));
 
 
-    const response = await cloudinary.uploader.upload(filePath, { resource_type: "auto", timestamp });
+    const response = await cloudinary.uploader.upload(filePath, { resource_type: "auto" });
     //  console.log("file is uploaded on cloudinary ", response.url);
 
     fs.unlinkSync(filePath);
