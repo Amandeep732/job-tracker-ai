@@ -60,9 +60,6 @@ const jobSchema = new Schema({
 
 }, { timestamps: true })
 
-// jobSchema.index(
-//   { jobTitle: 1, user: 1 }, 
-//   { unique: true }
-// );
+
 
 export const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
