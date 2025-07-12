@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       return res.status(409).json({ error: "This job already exists." });
     }
     const pathName = req.file?.path;
-    console.log(`resume path is ${req}`)
+    //console.log(`resume path is ${req}`)
     if (!pathName) return res.status(400).json({ error: "Resume is missing" });
 
     // ✅ ✅ ✅ AI LOGIC STARTS HERE

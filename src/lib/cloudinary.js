@@ -18,7 +18,10 @@ export const uploadOnCloudinary = async function (filePath) {
         if (!filePath) {
             return NextResponse.json({ error: "file path is missing" }, { status: 404 })
         }
-        console.log(`your file path is :${filePath}`)
+        console.log(process.env.CLOUDINARY_NAME, process.env.CLOUDINARY_API_KEY, process.env.CLOUDINARY_API_SECRET)
+         
+        console.log("📁 Uploading file from:", filePath);
+        console.log("📄 File exists?", fs.existsSync(filePath));
 
         const response = await cloudinary.uploader.upload(filePath, { resource_type: "auto" });
         console.log("file is uploaded on cloudinary ", response.url);
