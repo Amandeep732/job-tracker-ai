@@ -4,13 +4,13 @@ import { User } from "@/models/user.model";
 
 export async function GET(request) {
   try {
-    console.log("🔍 /api/user/me hit");
+    //console.log("🔍 /api/user/me hit");
 
     await connectDb();
 
     // jwt verify middleware run behind the scene and put user id in header
     const userId = request.headers.get("x-user-id");
-
+    console.log(`userid is me route ${userId}`)
     if (!userId) {
       return new Response(
         JSON.stringify({ message: "user id not found" }),
@@ -19,6 +19,7 @@ export async function GET(request) {
     }
 
     const user = await User.findById(userId);
+    console.log(`user is in me route ${user}`)
     if (!user) {
       return new Response(
         JSON.stringify({ message: "user not found" }),

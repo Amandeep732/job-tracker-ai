@@ -8,8 +8,8 @@ export async function verifyJwtMiddleware(request) {
         console.log("logout middleware is running");
 
         const token = request.cookies.get("accessToken")?.value ||
-            request.headers.get("Authorization")?.replace("Bearer ", "");
-        //console.log("Token received:", token);
+        request.headers.get("Authorization")?.replace("Bearer ", "");
+        console.log("Token received:", token);
 
         if (!token) {
             return NextResponse.redirect(new URL("/login", request.url))
@@ -19,7 +19,7 @@ export async function verifyJwtMiddleware(request) {
         if (!payload) {
             return NextResponse.json({ error: "token not decoded" }, { status: 500 })
         }
-        //console.log("Token received:", payload);
+        console.log("Token received:", payload);
 
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set("x-user-id", payload.id);
