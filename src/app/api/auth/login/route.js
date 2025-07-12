@@ -42,7 +42,8 @@ export async function POST(req) {
 
     // Fixed cookie settings for Vercel production
     const isProduction = process.env.NODE_ENV === "production";
-    const cookieDomain = isProduction ? "https://job-tracker-nine-henna.vercel.app" : undefined;
+    const cookieDomain = isProduction ? "job-tracker-nine-henna.vercel.app" : undefined;
+
 
     // Set accessToken cookie
     response.cookies.set("accessToken", accessToken, {

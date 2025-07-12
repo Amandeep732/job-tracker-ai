@@ -2,8 +2,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api",       // 🔥 Automatically works on localhost AND Vercel
-  withCredentials: true, // 🔐 Cookie bhejne ke liye zaruri hai
+  baseURL: "/api",       
+  withCredentials: true, 
 });
 
 export default api;

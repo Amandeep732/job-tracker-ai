@@ -21,7 +21,6 @@ export default function Login() {
 
   try {
     const response = await api.post("/auth/login", formData); // ✅ Axios auto handles headers & JSON
-
     router.push("/dashboard");
   } catch (err) {
     setError(err.response?.data?.error || err.message); // ✅ Show backend error
