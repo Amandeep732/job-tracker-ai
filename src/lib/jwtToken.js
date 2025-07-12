@@ -15,6 +15,9 @@ export const generateTokens = (userId) => {
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
       throw new Error("JWT secrets not configured in environment variables");
     }
+    console.log("Access expiry value:", process.env.JWT_ACCESS_EXPIRY);
+    console.log("Refresh expiry value:", process.env.JWT_REFRESH_EXPIRY);
+
 
     if (!userId || typeof userId.toString !== 'function') {
       throw new Error(`Invalid userId: ${userId}`);
@@ -27,7 +30,7 @@ export const generateTokens = (userId) => {
     const accessToken = jwt.sign(
       { id: userIdStr },
       process.env.JWT_ACCESS_SECRET,
-      { expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m" }
+      { expiresIn: process.env.JWT_ACCESS_EXPIRY || "20m" }
     );
 
     const refreshToken = jwt.sign(
