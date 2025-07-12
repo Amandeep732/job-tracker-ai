@@ -9,6 +9,7 @@ export async function GET(request) {
     await connectDb();
     // jwt verify middleware run behind the scene and put user id in header
     const userId = request.cookies.get("userId")?.value;
+    console.log(`userid from me  ${userId}`)
     if (!userId) {
       return new Response(
         JSON.stringify({ message: "user id not found" }),

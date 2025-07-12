@@ -7,7 +7,7 @@ export async function GET(request) {
     //console.log(`job is ${Job}`)
 
     const userId = request.cookies.get("userId")?.value;
-
+   console.log(`userid from status  ${userId}`)
     if (!userId) {
       return new Response(
         JSON.stringify({ message: "user id not found" }),
