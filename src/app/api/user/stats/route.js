@@ -5,7 +5,7 @@ export async function GET(request) {
   try {
     await connectDb();
 
-    const userId = request.headers.get("x-middleware-request-user-id");
+    const userId = request.cookies.get("userId")?.value;
 
     if (!userId) {
       return new Response(

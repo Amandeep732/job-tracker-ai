@@ -4,10 +4,10 @@ import { Activity } from "@/models/activity.model";
 export async function GET(request) {
   try {
     await connectDb();
+   
+    const userId = request.cookies.get("userId")?.value;
 
     // User ID from header set by JWT middleware
-    const userId = request.headers.get("x-middleware-request-user-id");
-    console.log('user is ', userId);
     
     if (!userId) {
       return new Response(

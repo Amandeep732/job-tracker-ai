@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
-        const userId = request.headers.get("x-middleware-request-user-id");
+        const userId = request.cookies.get("userId")?.value;
 
         if (!userId) {
             return NextResponse.json(

@@ -11,8 +11,7 @@ export async function GET(request, { params }) {
         const jobId = params.id;
         console.log(`doc id : ${jobId}`);
         
-        const userId = request.headers.get("x-middleware-request-user-id");
-        console.log(`user id is : ${userId}`);
+        const userId = request.cookies.get("userId")?.value;
         
         const jobDocs = await Job.findOne({ _id: jobId, user: userId })
             .select("-createdAt -updatedAt -__v -user");
