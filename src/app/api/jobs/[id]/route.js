@@ -27,4 +27,4 @@ export async function GET(request, { params }) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }
-export const runtime = 'edge';
+
