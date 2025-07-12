@@ -1,58 +1,61 @@
 import { NextResponse } from 'next/server'
 import { jwtVerify } from "jose";
 
-// const PROTECTED_PATHS = [
-//   "/api/auth/logout",
-//   "/api/jobs", // ✅ with leading slash
-//   "/api/user/me",
-//   "/api/user/stats",
-//   "/api/user/activity",
-// ];
 const key = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET);
 
 export async function middleware(request) {
-  
-    console.log(`Middleware running for: ${request.nextUrl.pathname}`);
+  console.log(`Middleware running for: ${request.nextUrl.pathname}`);
 
-    try {
-    const token =
+  try {
+    // Extract token from cookies or Authorization header
+    const token = 
       request.cookies.get("accessToken")?.value ||
       request.headers.get("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    const { payload } = await jwtVerify(token, key);
-
-    if (!payload) {
-      return NextResponse.json(
-        { error: "token not decoded" },
-        { status: 500 }
+      console.log("❌ No token found");
+      return new NextResponse(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
-    
-    const cookieDomain ="job-tracker-nine-henna.vercel.app";
 
-    // ✅ Set user ID in cookie instead of header
+    // Verify JWT
+    const { payload } = await jwtVerify(token, key);
+    if (!payload?.id) {
+      console.log("⚠️ Invalid token payload");
+      return new NextResponse(
+        JSON.stringify({ error: "Invalid token" }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create response and set user ID cookie
     const response = NextResponse.next();
-    response.cookies.set("userId", payload.id || 'id', {
+    response.cookies.set({
+      name: "userId",
+      value: payload.id,
       httpOnly: true,
       path: "/",
-      sameSite: "none", 
+      sameSite: "none",
       secure: true,
-      domain: cookieDomain 
+      // Remove domain or set dynamically
+      domain: process.env.NODE_ENV === "production" 
+        ? "job-tracker-nine-henna.vercel.app"  // 👈 Change to your actual domain
+        : undefined
     });
 
+    console.log(`✅ User ID cookie set for: ${payload.id}`);
     return response;
+    
   } catch (error) {
-    console.error("❌ Token verification failed:", error.message);
-    return new NextResponse("Unauthorized token", { status: 401 });
+    console.error("❌ Token verification failed:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Invalid token" }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
   }
-
 }
-
-// ✅ Matcher for all relevant API routes
 
 export const config = {
   matcher: [
@@ -63,4 +66,6 @@ export const config = {
     "/api/user/activity",
   ],
 };
+
+
 
