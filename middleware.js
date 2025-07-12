@@ -36,7 +36,7 @@ export async function middleware(request) {
 
     // ✅ Set user ID in cookie instead of header
     const response = NextResponse.next();
-    response.cookies.set("userId", payload.id, {
+    response.cookies.set("userId", payload.id || 'id', {
       httpOnly: true,
       path: "/",
       sameSite: "none", 
@@ -51,8 +51,6 @@ export async function middleware(request) {
   }
 
 }
-console.log("🟢 Middleware file loaded");
-
 
 // ✅ Matcher for all relevant API routes
 
