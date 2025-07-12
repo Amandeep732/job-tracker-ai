@@ -4,8 +4,14 @@ import { generateTokens } from "./jwtToken";
 export const generateAccessandRefreshToken = async function (userId) {
     try {
         const user = await User.findById(userId);
+        if (!user) {
+            const err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+
         const { accessToken, refreshToken } = generateTokens(user._id.toString())
-    
+
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false })
 

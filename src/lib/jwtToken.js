@@ -2,41 +2,32 @@ import jwt from "jsonwebtoken";
 
 export const generateTokens = (userId) => {
   try {
-    // Debug: Log critical variables
-    console.log("Token generation started with:", {
-      NODE_ENV: process.env.NODE_ENV,
-      hasAccessSecret: !!process.env.JWT_ACCESS_SECRET,
-      hasRefreshSecret: !!process.env.JWT_REFRESH_SECRET,
-      userId: userId,
-      userIdType: typeof userId
-    });
-
-    // Validate inputs
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
       throw new Error("JWT secrets not configured in environment variables");
     }
-    console.log("Access expiry value:", process.env.JWT_ACCESS_EXPIRY);
-    console.log("Refresh expiry value:", process.env.JWT_REFRESH_EXPIRY);
 
+    const accessExpiry = (process.env.JWT_ACCESS_EXPIRY || "20m").trim().replace(/^"+|"+$/g, "");
+    const refreshExpiry = (process.env.JWT_REFRESH_EXPIRY || "7d").trim().replace(/^"+|"+$/g, "");
+
+    console.log("Access expiry value:", accessExpiry);
+    console.log("Refresh expiry value:", refreshExpiry);
 
     if (!userId || typeof userId.toString !== 'function') {
       throw new Error(`Invalid userId: ${userId}`);
     }
 
-    // Convert userId to string if needed
     const userIdStr = userId.toString();
 
-    // Generate tokens with safe defaults
     const accessToken = jwt.sign(
       { id: userIdStr },
       process.env.JWT_ACCESS_SECRET,
-      { expiresIn: process.env.JWT_ACCESS_EXPIRY || "20m" }
+      { expiresIn: accessExpiry }
     );
 
     const refreshToken = jwt.sign(
       { id: userIdStr },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d" }
+      { expiresIn: refreshExpiry }
     );
 
     return { accessToken, refreshToken };
