@@ -47,8 +47,9 @@ export async function middleware(request) {
     return new NextResponse("Unauthorized token", { status: 401 });
   }
 
-  return NextResponse.next();
 }
+console.log("🟢 Middleware file loaded");
+
 
 // ✅ Matcher for all relevant API routes
 export const config = {
