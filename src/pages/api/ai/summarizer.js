@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import pdfParse from "pdf-parse";
 import fs from "fs";
-import path from "path";
 import { runMiddleware } from "@/lib/runMiddleware";
 import { upload } from "@/lib/multer";
 
@@ -17,13 +16,13 @@ let requestCount = 0;
 let lastResetTime = Date.now();
 
 export default async function handler(req, res) {
-  // ✅ Reset rate limit every minute
+  // Rate limiting check
   const now = Date.now();
-  if (now - lastResetTime > 60000) {
+  if (now - lastResetTime > 60000) { // 1 minute
     requestCount = 0;
     lastResetTime = now;
   }
-
+  
   if (requestCount >= RATE_LIMIT) {
     return res.status(429).json({ error: "Rate limit exceeded. Please try again later." });
   }
@@ -34,14 +33,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ✅ Create /tmp/resume-upload if not exists
-    const tempDir = "/tmp/resume-upload";
-    fs.mkdirSync(tempDir, { recursive: true });
-
-    // ✅ Override multer's destination to /tmp
-    req.body = {}; // necessary for multer
-    req.fileDestination = tempDir; // 👈 YOU NEED TO READ THIS IN MULTER SETUP
-
     await runMiddleware(req, res, upload.single("resumeFile"));
 
     const { jobDesc } = req.body;
@@ -51,21 +42,24 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Resume file is missing." });
     }
 
-    // ✅ Read and parse resume PDF
+    // Read and parse resume
     const dataBuffer = fs.readFileSync(resumePath);
     const pdfData = await pdfParse(dataBuffer);
     const resumeText = pdfData.text;
 
-    // ✅ Gemini model setup
+    // Set up Gemini - CORRECT MODEL NAMES:
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+    
+    // For free tier (60 RPM limit):
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash", // Correct model name
+      // model: "gemini-1.0-pro", // Alternative free option
     });
 
-    // ✅ Prompt construction
+    // Optimized prompt
     const prompt = `Analyze this job-resume match:
-Job: ${jobDesc.substring(0, 2000)}... [truncated]
-Resume: ${resumeText.substring(0, 8000)}... [truncated]
+Job: ${jobDesc.substring(0, 2000)}... [truncated if too long]
+Resume: ${resumeText.substring(0, 8000)}... [truncated if too long]
 
 Respond in strict JSON format only:
 {
@@ -83,32 +77,35 @@ Respond in strict JSON format only:
       return res.status(200).json(parsed);
     } catch (e) {
       console.error("Failed to parse response:", text);
+      // Try to extract JSON if it's mixed with markdown
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         try {
           return res.status(200).json(JSON.parse(jsonMatch[0]));
-        } catch (e) {}
+        } catch (e) {
+          // Fall through to return raw text
+        }
       }
       return res.status(200).json({
         summary: text,
         resumeTips: [],
-        fitAnalysis: "",
+        fitAnalysis: ""
       });
     }
   } catch (error) {
     console.error("Error:", error);
-    return res.status(500).json({
+    return res.status(500).json({ 
       error: error.message,
       note: "Check your model name and API key",
       details: {
         possibleModels: ["gemini-1.5-flash", "gemini-1.0-pro"],
-        freeTierInfo: "60 requests per minute limit",
-      },
+        freeTierInfo: "60 requests per minute limit"
+      }
     });
   } finally {
-    // ✅ Clean up resume
-    if (req.file?.path) {
-      fs.unlinkSync(req.file.path);
+    // Clean up uploaded file
+    if(req.file.path){
+     fs.unlinkSync(req.file.path);
     }
   }
 }

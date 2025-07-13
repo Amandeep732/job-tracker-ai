@@ -40,7 +40,7 @@ export default function AddJobForm() {
     const form = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        console.log(key, value);
+        
         form.append(key, value);
       }
     });
