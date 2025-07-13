@@ -33,35 +33,33 @@ export default function AddJobForm() {
   };
 
   const handleAddJob = async () => {
-  try {
-    setError(null);
-    setLoading(true);
+    try {
+      setError(null);
+      setLoading(true);
 
-    const form = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        
-        form.append(key, value);
-      }
-    });
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          form.append(key, value);
+        }
+      });
 
-    form.append("AiSummary", aiSummary);
-    form.append("AiTips", JSON.stringify(aiTips));
-    form.append("AiMatchScore", aiMatchScore);
+      form.append("AiSummary", aiSummary);
+      form.append("AiTips", JSON.stringify(aiTips));
+      form.append("AiMatchScore", aiMatchScore);
 
-    const res = await api.post("/addjob", form, {
-      headers: { "Content-Type": "multipart/form-data" }, // ✅ Only this kept
-    });
+      const res = await api.post("/addjob", form, {
+        headers: { "Content-Type": "multipart/form-data" }, // ✅ Only this kept
+      });
 
-    setSuccess("Job added with AI insights!");
-    resetForm();
-  } catch (error) {
-    setError(error.response?.data?.error || "Failed to add job");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setSuccess("Job added with AI insights!");
+      resetForm();
+    } catch (error) {
+      setError(error.response?.data?.error || "Failed to add job");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -79,40 +77,39 @@ export default function AddJobForm() {
   };
 
   const handleGenerateAI = async () => {
-  if (!formData.jobDesc || !formData.resumeFile) {
-    setError("Please add job description and resume first");
-    return;
-  }
-
-  setLoading(true);
-  setError(null);
-  try {
-    const form = new FormData();
-    form.append("jobDesc", formData.jobDesc);
-    form.append("resumeFile", formData.resumeFile);
-
-    const res = await api.post("/ai/summarizer", form, {
-      headers: { "Content-Type": "multipart/form-data" }, // ✅ Just kept this
-    });
-
-    setAiSummary(res.data.summary || "");
-    setAiTips(res.data.resumeTips || []);
-    setAiMatchScore(res.data.fitAnalysis || "");
-  } catch (error) {
-    if (error.response?.status === 429) {
-      setError(
-        "⚠️ You're hitting the AI usage limit. Please wait and try again later."
-      );
-    } else {
-      setError(
-        error.response?.data?.error || "Failed to generate AI insights"
-      );
+    if (!formData.jobDesc || !formData.resumeFile) {
+      setError("Please add job description and resume first");
+      return;
     }
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+    setError(null);
+    try {
+      const form = new FormData();
+      form.append("jobDesc", formData.jobDesc);
+      form.append("resumeFile", formData.resumeFile);
+
+      const res = await api.post("/ai/summarizer", form, {
+        headers: { "Content-Type": "multipart/form-data" }, // ✅ Just kept this
+      });
+
+      setAiSummary(res.data.summary || "");
+      setAiTips(res.data.resumeTips || []);
+      setAiMatchScore(res.data.fitAnalysis || "");
+    } catch (error) {
+      if (error.response?.status === 429) {
+        setError(
+          "⚠️ You're hitting the AI usage limit. Please wait and try again later."
+        );
+      } else {
+        setError(
+          error.response?.data?.error || "Failed to generate AI insights"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8 bg-zinc-900 text-white rounded-2xl shadow-lg">
@@ -180,15 +177,16 @@ export default function AddJobForm() {
           onChange={handleChange}
           value={formData.notes}
         />
-
+        <label className="block text-sm font-medium text-gray-300 mb-1" htmlFor="reminderDate">
+          Applying Date
+        </label>
         <input
           type="date"
           name="reminderDate"
-          className="p-3 rounded-md bg-zinc-800 w-full focus:outline-none"
+          className="w-full p-3 rounded-md bg-zinc-800  border-zinc-600  focus:ring-2 focus:ring-blue-500 text-gray-200"
           onChange={handleChange}
           value={formData.reminderDate}
         />
-
         <div className="space-y-1">
           <label className="block text-sm text-gray-400">Resume (PDF) *</label>
           <input
