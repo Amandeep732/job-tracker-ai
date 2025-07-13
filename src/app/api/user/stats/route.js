@@ -1,4 +1,5 @@
 import connectDb from "@/lib/connectDB";
+import { getDataFromToken } from "@/lib/getDataFromToken";
 import { Job } from "@/models/job.model";
 
 export async function GET(request) {
@@ -6,7 +7,7 @@ export async function GET(request) {
     await connectDb();
     //console.log(`job is ${Job}`)
 
-    const userId = request.cookies.get("userId")?.value;
+    const userId = await getDataFromToken(request);
    console.log(`userid from status  ${userId}`)
     if (!userId) {
       return new Response(

@@ -1,10 +1,11 @@
 import connectDb from "@/lib/connectDB";
+import { getDataFromToken } from "@/lib/getDataFromToken";
 import { Job } from "@/models/job.model";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
-        const userId = request.cookies.get("userId")?.value;
+        const userId = await getDataFromToken(request);
 
         if (!userId) {
             return NextResponse.json(

@@ -1,11 +1,12 @@
 import connectDb from "@/lib/connectDB";
+import { getDataFromToken } from "@/lib/getDataFromToken";
 import { Activity } from "@/models/activity.model";
 
 export async function GET(request) {
   try {
     await connectDb();
    
-    const userId = request.cookies.get("userId")?.value;
+    const userId = await  getDataFromToken(request);
 
     // User ID from header set by JWT middleware
     

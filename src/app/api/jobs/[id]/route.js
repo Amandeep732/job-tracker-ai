@@ -1,4 +1,5 @@
 import connectDb from "@/lib/connectDB";
+import { getDataFromToken } from "@/lib/getDataFromToken";
 import { Job } from "@/models/job.model";
 import { NextResponse } from "next/server";
 
@@ -11,7 +12,7 @@ export async function GET(request, { params }) {
         const jobId = params.id;
         console.log(`doc id : ${jobId}`);
         
-        const userId = request.cookies.get("userId")?.value;
+        const userId = await getDataFromToken(request);
         
         const jobDocs = await Job.findOne({ _id: jobId, user: userId })
             .select("-createdAt -updatedAt -__v -user");

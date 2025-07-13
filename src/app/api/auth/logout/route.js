@@ -2,12 +2,14 @@ import { User } from "@/models/user.model";
 import connectDb from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { getDataFromToken } from "@/lib/getDataFromToken";
+
 
 export async function POST(request) {
     try {
         await connectDb();
     
-        const userId = request.cookies.get("userId")?.value;
+        const userId =  await getDataFromToken(request);
         if (!userId) {
             return NextResponse.json(
                 { error: "User id not found" },
