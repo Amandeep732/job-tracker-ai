@@ -37,7 +37,8 @@ Fully optimized UI for mobile, tablet, and desktop devices.
 
 ## 📸 Screenshots
 
-![Dashboard Screenshot](public/screenshot.png)
+![Dashboard Screenshot](public/screenshot/Screenshot%202025-07-07%20133338.png)
+![AI Generated ScreenShot Screenshot](public/screenshot/Screenshot%202025-07-13%20230914.png)
 
 ## 🛠️ Tech Stack
 
@@ -52,13 +53,22 @@ Fully optimized UI for mobile, tablet, and desktop devices.
 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/job-tracker.git
+git clone https://github.com/Amandeep732/job-tracker-ai
 cd job-tracker
 
 npm install
 
-MONGODB_URI=your_mongo_uri
-JWT_SECRET=your_secret
+MONGODB_URI=your mongodb
+JWT_ACCESS_EXPIRY=your access expiry
+JWT_REFRESH_SECRET=your refresh expriy
+JWT_REFRESH_EXPIRY=your refresh expiry
+CLOUDINARY_NAME=your cloudinary name 
+CLOUDINARY_API_KEY=your api key
+CLOUDINARY_API_SECRET=your api secret
+GEMINI_API_KEY=your gemini for AI (Google AI studio)
+UPSTASH_REDIS_REST_URL=your redish URL
+UPSTASH_REDIS_REST_TOKEN=your token
+RESEND_API_KEY=your resend api key
 
 npm run dev
 
@@ -66,12 +76,9 @@ npm run dev
 ## 👨‍💻 Author
 
 - **Achal Tanwar**
-- GitHub: [@yourgithub](https://github.com/yourusername)
+- GitHub: [profile](https://github.com/Amandeep732)
 
 ## 📜 License
 
 This project is licensed under the MIT License.
 
-git add README.md
-git commit -m "add README.md"
-git push origin main
