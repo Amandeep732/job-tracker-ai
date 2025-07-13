@@ -58,6 +58,8 @@ cd job-tracker
 
 npm install
 
+
+## 📦 .env
 MONGODB_URI=your mongodb
 JWT_ACCESS_EXPIRY=your access expiry
 JWT_REFRESH_SECRET=your refresh expriy
