@@ -4,35 +4,37 @@ export function DummyDashboard() {
   return (
     <div className="bg-[#0d0d0f] p-6 rounded-lg border border-white/10 max-w-2xl mx-auto">
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-[#1a1a1a] p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">📊</span>
-            <div>
-              <p className="text-sm text-gray-400">Applications</p>
-              <p className="text-xl font-bold text-white">24</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-[#f02e65]/10 border border-[#f02e65]/30 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🔮</span>
-            <div>
-              <p className="text-sm text-gray-400">Response Rate</p>
-              <p className="text-xl font-bold text-[#f02e65]">85%</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-[#1a1a1a] p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">⚡</span>
-            <div>
-              <p className="text-sm text-gray-400">Optimized</p>
-              <p className="text-xl font-bold text-white">12</p>
-            </div>
-          </div>
-        </div>
+      {/* Stats Row */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+  <div className="bg-[#1a1a1a] p-4 rounded-lg min-w-0">
+    <div className="flex items-center gap-2">
+      <span className="text-xl shrink-0">📊</span>
+      <div className="min-w-0">
+        <p className="text-sm text-gray-400 truncate">Applications</p>
+        <p className="text-xl font-bold text-white">24</p>
       </div>
+    </div>
+  </div>
+  <div className="bg-[#f02e65]/10 border border-[#f02e65]/30 p-4 rounded-lg min-w-0">
+    <div className="flex items-center gap-2">
+      <span className="text-xl shrink-0">🔮</span>
+      <div className="min-w-0">
+        <p className="text-sm text-gray-400 truncate">Response Rate</p>
+        <p className="text-xl font-bold text-[#f02e65]">85%</p>
+      </div>
+    </div>
+  </div>
+  <div className="bg-[#1a1a1a] p-4 rounded-lg min-w-0">
+    <div className="flex items-center gap-2">
+      <span className="text-xl shrink-0">⚡</span>
+      <div className="min-w-0">
+        <p className="text-sm text-gray-400 truncate">Optimized</p>
+        <p className="text-xl font-bold text-white">12</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Fake Table */}
       <div className="border border-white/10 rounded-lg overflow-hidden">

@@ -5,7 +5,7 @@ export const getDataFromToken = (request) => {
   try {
     const token = request.cookies.get("accessToken")?.value || '';
     
-    if (!token) {
+    if (!token) { 
       throw new Error("No access token found");
     }
 
